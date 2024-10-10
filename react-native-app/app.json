@@ -1,5 +1,9 @@
 {
   "expo": {
+    "extra": {
+      "URL_API": "http://127.0.0.1:8000/api/"
+      // "API_KEY": "sua-chave-api"
+    },
     "name": "newhair",
     "slug": "newhair",
     "version": "1.0.0",
@@ -13,7 +17,8 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.lucasnves.projetoHair"
     },
     "android": {
       "adaptiveIcon": {

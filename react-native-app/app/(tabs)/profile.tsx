@@ -1,11 +1,18 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import { Image, StyleSheet, Platform, Button } from 'react-native';
 
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { Ionicons } from '@expo/vector-icons';
+import { useAuth } from '@/context/GlobalContext';
 
 export default function HomeScreen() {
+  const { signOut } = useAuth();
+
+  const handleSignOut = () => {
+    signOut();
+  }
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
@@ -21,6 +28,8 @@ export default function HomeScreen() {
           <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
         </ThemedText>
       </ThemedView>
+
+      <Button title="Log Out" onPress={handleSignOut} />
     </ParallaxScrollView>
   );
 }
