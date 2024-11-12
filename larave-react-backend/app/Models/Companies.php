@@ -10,5 +10,4 @@ class Companies extends Model
     {
         return $this->hasMany(User::class);
     }
-
 }

@@ -15,10 +15,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('company_id')->constrained('companies')->onDelete('cascade');
-            $table->foreignId('hairdresser_id')->constrained('hairdressers')->onDelete('cascade');
+            $table->foreignId('hairdresser_id')->constrained('users')->onDelete('cascade');
             $table->dateTime('appointment_time');
             $table->decimal('price', 8, 2);
-            $table->string('status')->default('pending');
+            $table->integer('status')->nullable();
             $table->text('observations')->nullable();
             $table->timestamps();
         });
