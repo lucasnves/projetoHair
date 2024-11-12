@@ -19,13 +19,13 @@ export default function HomeScreen() {
       headerImage={<Ionicons size={180} name="person" style={styles.headerImage} />}
     >
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Profile</ThemedText>
+        <ThemedText type="extraMassiveBold">Profile</ThemedText>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
+        <ThemedText type="extraHugeBold">Step 1: Try it</ThemedText>
         <ThemedText>
           When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
+          <ThemedText type="large">npm run reset-project</ThemedText> to get a fresh{' '}
         </ThemedText>
       </ThemedView>
 

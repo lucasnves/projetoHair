@@ -14,6 +14,7 @@ import Animated, {
 
 import { ThemedView } from "@/components/ThemedView";
 import { Ionicons } from "@expo/vector-icons";
+import { Colors } from "@/constants/Colors";
 
 const HEADER_HEIGHT = 110;
 
@@ -56,7 +57,7 @@ export default function ParallaxScrollView({
 
   return (
     <ThemedView style={styles.container}>
-      <Animated.ScrollView ref={scrollRef} scrollEventThrottle={16}>
+      <Animated.ScrollView ref={scrollRef} scrollEventThrottle={16} showsVerticalScrollIndicator={false}>
         <Animated.View
           style={[
             styles.header,
@@ -69,9 +70,9 @@ export default function ParallaxScrollView({
         {handleBack && (
           <TouchableOpacity
             onPress={() => handleBack()}
-            style={styles.routerBack}
+            style={[styles.routerBack, { backgroundColor: colorScheme === 'light' ? Colors.light.background_secondary : Colors.dark.background_secondary }]}
           >
-            <Ionicons size={26} name={"chevron-down-outline"} color={"white"} />
+            <Ionicons size={26} name={"chevron-down-outline"} color={colorScheme === 'light' ? Colors.light.tabIconDefault : Colors.dark.tabIconDefault} />
           </TouchableOpacity>
         )}
         <ThemedView style={styles.content}>{children}</ThemedView>
@@ -90,7 +91,8 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: 16,
+    paddingVertical: 16,
+    paddingHorizontal: 10,
     gap: 12,
     overflow: "hidden",
   },
