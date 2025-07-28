@@ -8,7 +8,7 @@ use Inertia\Response;
 
 class HomeController extends Controller
 {
-    public function getCompanys(): Response
+    public function get_companys(): Response
     {
         $companys = Companies::all();
         return Inertia::render('Dashboard', [

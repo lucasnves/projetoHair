@@ -6,10 +6,14 @@ import { FlatList, StyleSheet, TouchableOpacity } from "react-native";
 import { ThemedView } from "./ThemedView";
 import { ThemedText } from "./ThemedText";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
+import { Colors } from "@/constants/Colors";
+import { useThemeColorByName } from "@/hooks/useThemeColorByName";
+import { IconText } from "./IconText";
 
 export function CardCompanie() {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [likeCompany, setLikeCompany] = useState("heart-o");
+  const colorIcon = useThemeColorByName("text");
   const router = useRouter();
 
   const handleClickLike = async () => {
@@ -45,66 +49,54 @@ export function CardCompanie() {
           renderItem={({ item: company, index }) => (
             <TouchableOpacity
               key={index}
+              disabled={company.is_open ? false : true}
               onPress={() => handleClick(company.id)}
               activeOpacity={0.6}
             >
               <ThemedView
-                style={styles.cardCompanie}
+                style={[styles.cardMain, {opacity: company.is_open ? 1 : 0.5 }]}
                 colorName="background_secondary"
               >
                 <ThemedView
                   colorName="background_secondary"
                   style={styles.cardCompanie}
                 >
-                  <ThemedView
-                    colorName="tintSecondary"
-                    style={{
-                      width: 70,
-                      height: 90,
-                      justifyContent: "center",
-                      alignItems: "center",
-                      marginRight: 5,
-                      borderRadius: 4,
-                    }}
-                  >
+                  <ThemedView colorName="tintSecondary" style={styles.image}>
                     <Ionicons size={30} name="image-outline" />
                   </ThemedView>
                   <ThemedView
-                    style={{ flexDirection: "column", flex: 1, gap: 5 }}
+                    style={styles.cardInfos}
                     colorName="background_secondary"
                   >
                     <ThemedText type="extraLargeBold" numberOfLines={1}>
                       {company.name}
                     </ThemedText>
                     <ThemedView
-                      style={{ flexDirection: "row", gap: 3 }}
+                      style={styles.cardInfosLadoALado}
                       colorName="background_secondary"
                     >
-                      <ThemedView
-                        style={{
-                          flexDirection: "row",
-                          gap: 3,
-                          alignItems: "center",
-                        }}
-                        colorName="background_secondary"
-                      >
-                        <Ionicons size={13} name="star" color={"orange"} />
-                        <ThemedText type="medium" numberOfLines={1}>
-                          2.5 •
-                        </ThemedText>
-                      </ThemedView>
-                      <ThemedText type="medium" numberOfLines={1}>
-                        {company.phone_number}
-                      </ThemedText>
+                      <IconText
+                        text={"2.5"}
+                        textSize="mediumBold"
+                        icon={"Ionicons"}
+                        iconName={"star"}
+                        iconSize={13}
+                        colorName="pending"
+                      />
+                      <IconText
+                        text={company.phone_number}
+                        textSize="medium"
+                        icon={"Foundation"}
+                        iconName={"telephone"}
+                        iconSize={14}
+                      />
                     </ThemedView>
-                    <ThemedText type="medium" style={{}}>
-                      {company.location}
-                    </ThemedText>
+                    <ThemedText type="medium">{company.location}</ThemedText>
                   </ThemedView>
                 </ThemedView>
                 <ThemedView
                   colorName="background_secondary"
-                  style={{ justifyContent: "center", padding: 5 }}
+                  style={styles.cardLike}
                 >
                   <TouchableOpacity
                     activeOpacity={0.8}
@@ -113,7 +105,7 @@ export function CardCompanie() {
                     <FontAwesome
                       size={18}
                       name={likeCompany}
-                      color={likeCompany == "heart-o" ? "white" : "red"}
+                      color={likeCompany == "heart-o" ? colorIcon : "red"}
                     />
                   </TouchableOpacity>
                 </ThemedView>
@@ -132,12 +124,37 @@ const styles = StyleSheet.create({
   main: {
     marginBottom: 10,
   },
-  cardCompanie: {
-    padding: 8,
+  cardMain: {
     borderRadius: 8,
-    flexDirection: "row",
+    padding: 6,
     marginBottom: 8,
+    flexDirection: "row",
+  },
+  cardCompanie: {
+    flexDirection: "row",
     flex: 1,
+  },
+  image: {
+    width: 70,
+    height: 90,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 5,
+    borderRadius: 4,
+  },
+  cardInfos: {
+    flexDirection: "column",
+    flex: 1,
+    gap: 5,
+  },
+  cardInfosLadoALado: {
+    flexDirection: "row",
+    gap: 10,
+  },
+  cardLike: {
+    justifyContent: "center",
+    padding: 5,
+    marginLeft: 8,
   },
   titleCardCompanie: {
     fontSize: 16,

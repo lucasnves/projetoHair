@@ -2,7 +2,6 @@
   "expo": {
     "extra": {
       "URL_API": "http://127.0.0.1:8000/api/"
-      // "API_KEY": "sua-chave-api"
     },
     "name": "newhair",
     "slug": "newhair",
@@ -24,7 +23,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.lucasnves.projetoHair"
     },
     "web": {
       "bundler": "metro",

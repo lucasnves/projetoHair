@@ -4,6 +4,7 @@ export interface Company {
   observation: string;
   location: string;
   email: string;
+  is_open: boolean;
   phone_number: string;
   perfil_photo: string;
   created_at: string;
@@ -27,9 +28,11 @@ export interface Appointment {
   user_id: number;
   company_id: number;
   hairdresser_id: number;
+  hairdresser: string;
   appointment_time: string;
   price: string;
   status: number;
+  appointment_label: string;
   created_at: string;
   updated_at: string;
 }

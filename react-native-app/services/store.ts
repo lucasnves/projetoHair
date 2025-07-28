@@ -55,12 +55,16 @@ export const getAppointment = async (company_id: number) => {
       response = await api
         .post("get-appointment", {
           user_id: user.id,
-          company_id: company_id
+          company_id: company_id,
         })
         .then((response) => {
-          return response.data;
+          if (!response.data.error) {
+            return response.data.appointment;
+          }
+          return null;
         })
         .catch((error) => {
+          console.log("a");
           console.error("[ERROR APPOINTMENT]", error);
           return null;
         });

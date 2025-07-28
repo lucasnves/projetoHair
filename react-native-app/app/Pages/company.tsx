@@ -1,4 +1,11 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 import { useEffect, useState } from "react";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
@@ -6,42 +13,96 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { getAppointment, getCompany } from "@/services/store";
 
-import { Foundation, Ionicons } from "@expo/vector-icons";
+import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Appointment, Company } from "../interfaces";
 import { CardHairdresser } from "@/components/CardHairdresser";
+import { IconText } from "@/components/IconText";
+import { Colors } from "@/constants/Colors";
+
+import MapView, { Marker } from "react-native-maps";
+import * as Location from "expo-location";
 
 export default function HomeScreen() {
+  const router = useRouter();
+  const { company_id } = useLocalSearchParams();
+
   const [company, setCompany] = useState<Company>();
   const [appointment, setAppointment] = useState<Appointment>();
   const [closeOpen, setCloseOpen] = useState<boolean>(false);
   const [handleAppointment, setHandleAppointment] = useState<string>("pedding");
-  const { company_id } = useLocalSearchParams();
-  const router = useRouter();
+
+  const [userLocation, setUserLocation] = useState<{
+    latitude: number;
+    longitude: number;
+  }>();
+  const [companyCoords, setCompanyCoords] = useState<{
+    latitude: number;
+    longitude: number;
+  } | null>(null);
+
+  useEffect(() => {
+    loadCompany();
+    get_appointment();
+    getUserLocation();
+  }, []);
+
+  console.log(userLocation);
+
+  const getCoordinatesFromAddress = async (address: string) => {
+    try {
+      const geocode = await Location.geocodeAsync(address);
+      if (geocode.length > 0) {
+        return {
+          latitude: geocode[0].latitude,
+          longitude: geocode[0].longitude,
+        };
+      }
+    } catch (error) {
+      console.error("Erro ao geocodificar o endereço:", error);
+    }
+    return null;
+  };
+
+  const getUserLocation = async () => {
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      console.log("Permissão de localização negada");
+      return;
+    }
+
+    const location = await Location.getCurrentPositionAsync({});
+    const userLoc = {
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude,
+    };
+    setUserLocation(userLoc);
+  };
 
   const handleCloseOpen = async () => {
     setCloseOpen(!closeOpen);
   };
 
   const handleAppointments = async () => {
-    // console.log(await getAppointment());
+    console.log("a");
   };
 
   const get_appointment = async () => {
     const data = await getAppointment(Number(company_id));
-    console.log(data)
+    console.log(data);
     setAppointment(data);
   };
 
   const loadCompany = async () => {
     const company = await getCompany(Number(company_id));
+    console.log(company);
     setCompany(company);
-  };
 
-  useEffect(() => {
-    loadCompany();
-    get_appointment();
-  }, []);
+    if (company.location) {
+      const coords = await getCoordinatesFromAddress(company.location);
+      setCompanyCoords(coords);
+    }
+  };
 
   type Status = {
     label: string;
@@ -57,154 +118,160 @@ export default function HomeScreen() {
   };
 
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
-      headerImage={
-        <Ionicons size={120} name="storefront" style={styles.headerImage} />
-      }
-      handleBack={() => router.back()}
-    >
+    <SafeAreaView style={styles.main}>
       {company ? (
-        <ThemedView style={{ gap: 10 }}>
-          <ThemedView
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "flex-start",
-              marginBottom: 4,
-            }}
-          >
-            <ThemedText type="extraMassiveBold" style={{ flex: 1 }}>
-              {company.name}
-            </ThemedText>
-            <ThemedView
-              colorName={closeOpen ? "offline" : "online"}
-              style={{ padding: 4, borderRadius: 4 }}
-            >
-              <TouchableOpacity activeOpacity={1} onPress={handleCloseOpen}>
-                <ThemedText type="largeBold" colorName="white">
-                  {closeOpen ? "FECHADO" : "ABERTO"}
-                </ThemedText>
-              </TouchableOpacity>
-            </ThemedView>
+        <ThemedView>
+          <ThemedView style={styles.header}>
+            <TouchableOpacity onPress={router.back}>
+              <ThemedView colorName="tintTertiary" style={styles.backButton}>
+                <Ionicons name="chevron-down" size={25} />
+              </ThemedView>
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <ThemedView colorName="tintTertiary" style={styles.like}>
+                <FontAwesome size={20} name={"heart-o"} />
+              </ThemedView>
+            </TouchableOpacity>
           </ThemedView>
-          <ThemedView
-            style={{ justifyContent: "space-between", flexDirection: "row" }}
-          >
-            <ThemedView style={styles.iconText}>
-              <Foundation name="mail" size={18} color={"#fff"} />
-              <ThemedText type="large">{company.email}</ThemedText>
-            </ThemedView>
-            <ThemedView style={styles.iconText}>
-              <Foundation name="telephone" size={18} color={"#fff"} />
-              <ThemedText type="large">{company.phone_number}</ThemedText>
-            </ThemedView>
-          </ThemedView>
-          <ThemedView style={styles.iconText}>
-            <Ionicons name="location-sharp" size={15} color={"#fff"} />
-            <ThemedText type="large">{company.location}</ThemedText>
-          </ThemedView>
-          <ThemedText type="large">{company.observation}</ThemedText>
-
-          {/* MARCAR HORÁRIO */}
-          <ThemedView
-            colorName="background_secondary"
-            style={{
-              marginTop: 20,
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 10,
-              padding: 10,
-              borderRadius: 8,
-            }}
-          >
-            <ThemedView
-              colorName={appointment ? 'rescheduled' : "tint"}
-              style={{
-                borderRadius: 6,
-                flex: 1,
-              }}
-            >
-              <TouchableOpacity
-                activeOpacity={0.7}
-                onPress={handleAppointments}
-                style={{ height: 40, justifyContent: "center" }}
-              >
-                <ThemedText type="hugeBold" style={{ textAlign: "center" }}>
-                  {appointment && (Number(appointment.status) != 5) ? 'REMARCAR HORÁRIO' : 'MARCAR HORÁRIO'}
-                </ThemedText>
-              </TouchableOpacity>
-            </ThemedView>
-            {appointment && (
-              <ThemedView
-                colorName={
-                  appointment_status[appointment.status]?.label || "tint"
-                }
-                style={{
-                  height: 35,
-                  justifyContent: "center",
-                  paddingHorizontal: 6,
-                  borderRadius: 6,
-                }}
-              >
-                <Ionicons
-                  name={appointment_status[appointment.status].icon}
-                  size={24}
-                  color="#FFFFFF"
+          <ScrollView>
+            <ThemedView style={styles.container_top}>
+              <ThemedText type="hugeBold">{company.name}</ThemedText>
+              <ThemedView style={styles.view_top}>
+                <ThemedView
+                  colorName={company.is_open ? "online" : "offline"}
+                  style={styles.openClose}
+                >
+                  <ThemedText colorName={"white"} type="largeBold">
+                    {company.is_open ? "ABERTO" : "FECHADO"}
+                  </ThemedText>
+                </ThemedView>
+                <ThemedView style={styles.like_container}>
+                  <Ionicons name="star" size={18} color={Colors.dark.pending} />
+                  <ThemedText colorName="pending" type="largeBold">
+                    2.3
+                  </ThemedText>
+                  <ThemedText colorName="tintSecondary" type="mediumBold">
+                    (23 avaliações)
+                  </ThemedText>
+                </ThemedView>
+              </ThemedView>
+              <ThemedView style={styles.view_top}>
+                <IconText
+                  text={company.phone_number}
+                  textSize="largeBold"
+                  icon={"Foundation"}
+                  iconName={"telephone"}
+                  iconSize={18}
+                />
+                <IconText
+                  text={company.email}
+                  textSize="largeBold"
+                  icon={"Foundation"}
+                  iconName={"mail"}
+                  iconSize={18}
                 />
               </ThemedView>
-            )}
-          </ThemedView>
+              <ThemedText>{company.observation}</ThemedText>
+              <ThemedText>{company.location}</ThemedText>
 
-          <ThemedView style={{ marginTop: 20, gap: 14 }}>
-            <ThemedText type="extraHugeBold">Cabeleleiros</ThemedText>
-            <CardHairdresser company_id={Number(company_id)} />
-          </ThemedView>
+              {companyCoords && userLocation && (
+                <View style={styles.mapContainer}>
+                  <MapView
+                    style={styles.map}
+                    initialRegion={{
+                      latitude: companyCoords.latitude,
+                      longitude: companyCoords.longitude,
+                      latitudeDelta: 0.005,
+                      longitudeDelta: 0.005,
+                    }}
+                    showsUserLocation={!!userLocation}
+                    showsMyLocationButton={Platform.OS === "android"}
+                  >
+                    <Marker
+                      coordinate={companyCoords}
+                      title={company.name}
+                      description={company.location}
+                    />
+                  </MapView>
+
+                  <TouchableOpacity
+                    style={styles.expandButton}
+                    onPress={() =>
+                      router.push({
+                        pathname: "/Pages/mapScreen",
+                        params: {
+                          lat: companyCoords.latitude.toString(),
+                          lng: companyCoords.longitude.toString(),
+                        },
+                      })
+                    }
+                  >
+                    <Ionicons name="expand-outline" size={18} color="white" />
+                  </TouchableOpacity>
+                </View>
+              )}
+            </ThemedView>
+          </ScrollView>
         </ThemedView>
       ) : (
-        <ThemedView style={styles.titleContainer}>
-          <ThemedText type="largeBold">Não encontrado.</ThemedText>
-        </ThemedView>
+        <ThemedText>Carregando...</ThemedText>
       )}
-      <ThemedView style={styles.stepContainer}></ThemedView>
-    </ParallaxScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
+  main: {
+    flex: 1,
+    marginHorizontal: 10,
+  },
+  header: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    justifyContent: "space-between",
+    gap: 20,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  backButton: {
+    padding: 4,
+    borderRadius: 20,
   },
-  headerImage: {
-    color: "#808080",
-    bottom: -20,
-    left: -25,
-    position: "absolute",
+  like: {
+    padding: 7,
+    borderRadius: 20,
   },
-  cardCompanie: {
-    backgroundColor: "#efefef",
-    padding: 8,
-    borderRadius: 8,
+  container_top: {
+    marginTop: 20,
+    gap: 10,
+  },
+  view_top: {
     flexDirection: "row",
+    justifyContent: "space-between",
   },
-  textCardCompanie: {
-    fontSize: 13,
-    color: "black",
+  openClose: {
+    padding: 5,
+    borderRadius: 5,
   },
-  titleCardCompanie: {
-    fontSize: 16,
-    color: "black",
-    fontWeight: "700",
-  },
-  iconText: {
+  like_container: {
     flexDirection: "row",
+    alignItems: "center",
     gap: 5,
-    alignItems: "center",
+  },
+  mapContainer: {
+    borderRadius: 10,
+    overflow: "hidden",
+    position: "relative",
+    width: "100%",
+    height: 140,
+  },
+  map: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  expandButton: {
+    position: "absolute",
+    bottom: 5,
+    right: 5,
+    backgroundColor: "black",
+    padding: 6,
+    borderRadius: 20,
   },
 });

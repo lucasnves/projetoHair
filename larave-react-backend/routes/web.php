@@ -24,7 +24,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::get('/dashboard', [HomeController::class, 'getCompanys'])->name('dashboard');
+    Route::get('/dashboard', [HomeController::class, 'get_companys'])->name('dashboard');
 });
 
 require __DIR__.'/auth.php';
