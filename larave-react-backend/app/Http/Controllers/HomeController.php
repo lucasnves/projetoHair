@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Companies;
+use App\Models\Company;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -10,7 +10,7 @@ class HomeController extends Controller
 {
     public function get_companys(): Response
     {
-        $companys = Companies::all();
+        $companys = Company::all();
         return Inertia::render('Dashboard', [
             'companys' => $companys,
         ]);

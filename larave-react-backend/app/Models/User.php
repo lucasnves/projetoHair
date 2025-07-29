@@ -46,4 +46,24 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function ownedCompanies()
+    {
+        return $this->hasMany(Company::class, 'owner_id');
+    }
+
+    public function companies()
+    {
+        return $this->belongsToMany(Company::class);
+    }
+
+    public function companiesAsMember()
+    {
+        return $this->belongsToMany(Company::class, 'company_user', 'user_id', 'company_id');
+    }
+
+    public function services()
+    {
+        return $this->belongsToMany(Service::class, 'service_user');
+    }
 }

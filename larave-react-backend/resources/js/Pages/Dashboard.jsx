@@ -34,9 +34,9 @@ export default function Dashboard({ companys }) {
                                                 key={company.id}
                                             >
                                                 <div className="bg-white p-2 shadow-md rounded-lg flex items-start">
-                                                    {company.perfil_photo ?
+                                                    {company.logo ?
                                                         (<img 
-                                                            src={company.perfil_photo} 
+                                                            src={company.logo} 
                                                             alt={`${company.name}'s profile`} 
                                                             style={{minWidth: '130px', maxWidth: '130px' }}
                                                             className="aspect-[2/3] object-cover object-[right] rounded-md mr-4" 
@@ -61,10 +61,10 @@ export default function Dashboard({ companys }) {
                                                     }
                                                     <div>
                                                         <h3 className="font-bold text-lg">{company.name}</h3>
-                                                        <p><strong>Location:</strong> {company.location}</p>
+                                                        <p><strong>Location:</strong> {company.address} - {company.zip_code}</p>
                                                         <p><strong>Email:</strong> {company.email}</p>
-                                                        <p><strong>Phone:</strong> {company.phone_number}</p>
-                                                        <p style={styles.observation}><strong>Observation:</strong> {company.observation}</p>
+                                                        <p><strong>Phone:</strong> {company.phone}</p>
+                                                        <p style={styles.observation}><strong>Description:</strong> {company.description}</p>
                                                     </div>
                                                 </div>
                                             </SwiperSlide>

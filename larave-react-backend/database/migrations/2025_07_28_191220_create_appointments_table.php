@@ -13,13 +13,14 @@ return new class extends Migration
     {
         Schema::create('appointments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('company_id')->constrained('companies')->onDelete('cascade');
-            $table->foreignId('hairdresser_id')->constrained('users')->onDelete('cascade');
-            $table->dateTime('appointment_time');
-            $table->decimal('price', 8, 2);
-            $table->integer('status')->nullable();
-            $table->text('observations')->nullable();
+
+            $table->foreignId('company_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('employee_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('service_id')->constrained()->onDelete('cascade');
+            $table->foreignId('status_id')->constrained('appointment_statuses')->default(1);
+            $table->timestamp('appointment_time');
+            $table->text('notes')->nullable();
             $table->timestamps();
         });
     }

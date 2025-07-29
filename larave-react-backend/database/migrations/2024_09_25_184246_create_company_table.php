@@ -13,12 +13,18 @@ return new class extends Migration
     {
         Schema::create('companies', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('owner_id')->constrained('users')->onDelete('cascade');
             $table->string('name')->nullable();
-            $table->string('observation')->nullable();
-            $table->string('location')->nullable();
-            $table->string('phone_number')->nullable();
+            $table->string('cnpj')->nullable();
+            $table->string('phone')->nullable();
             $table->string('email')->nullable();
-            $table->text('perfil_photo')->nullable();
+            $table->string('logo')->nullable();
+            $table->text('description')->nullable();
+
+            $table->string('address')->nullable();
+            $table->string('zip_code')->nullable();
+
+            $table->boolean('active')->default(true);
             $table->timestamps();
         });
     }

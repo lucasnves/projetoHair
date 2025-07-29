@@ -16,4 +16,4 @@ Route::post('/login', [AuthController::class, 'loginUser']);
 
 Route::get('/companies', [LoadController::class, 'get_companies']);
 Route::post('/company', [LoadController::class, 'get_company']);
-Route::post('/company-hairdressers', [LoadController::class, 'get_company_hairdressers']);
+Route::post('/company-team', [LoadController::class, 'get_company_team']);
