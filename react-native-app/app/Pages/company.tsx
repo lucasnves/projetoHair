@@ -1,4 +1,5 @@
 import {
+  Alert,
   Platform,
   SafeAreaView,
   ScrollView,
@@ -8,20 +9,22 @@ import {
 } from "react-native";
 
 import { useEffect, useState } from "react";
-import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import { getAppointment, getCompany } from "@/services/store";
+import { get_company } from "@/services/store";
 
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { Appointment, Company } from "../interfaces";
-import { CardHairdresser } from "@/components/CardHairdresser";
+import { Appointment, Company, CompanyTeam } from "../interfaces";
 import { IconText } from "@/components/IconText";
 import { Colors } from "@/constants/Colors";
+import * as Clipboard from "expo-clipboard";
+import Toast from "react-native-toast-message";
+import { Linking } from "react-native";
 
 import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
+import { CardTeam } from "@/components/CardTeam";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -47,7 +50,55 @@ export default function HomeScreen() {
     getUserLocation();
   }, []);
 
-  console.log(userLocation);
+  const copy_button = async (text: string) => {
+    try {
+      await Clipboard.setStringAsync(text);
+      Toast.show({
+        type: "success",
+        text1: "Copiado com sucesso.",
+      });
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Falha ao copiar.",
+      });
+    }
+  };
+
+  const openMapsOptions = (address: string) => {
+    const lat = companyCoords?.latitude || 0;
+    const lng = companyCoords?.longitude || 0;
+    Alert.alert("Opções", "Escolha uma opção:", [
+      {
+        text: "Google Maps",
+        onPress: () =>
+          Linking.openURL(
+            `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`
+          ),
+      },
+      {
+        text: "Waze",
+        onPress: () =>
+          Linking.openURL(`https://waze.com/ul?ll=${lat},${lng}&navigate=yes`),
+      },
+      ...(Platform.OS === "ios"
+        ? [
+            {
+              text: "Apple Maps",
+              onPress: () =>
+                Linking.openURL(
+                  `http://maps.apple.com/?q=${encodeURIComponent(address)}`
+                ),
+            },
+          ]
+        : []),
+      {
+        text: "Copiar",
+        onPress: () => copy_button(address),
+      },
+      { text: "Cancelar", style: "cancel" },
+    ]);
+  };
 
   const getCoordinatesFromAddress = async (address: string) => {
     try {
@@ -88,18 +139,16 @@ export default function HomeScreen() {
   };
 
   const get_appointment = async () => {
-    const data = await getAppointment(Number(company_id));
-    console.log(data);
-    setAppointment(data);
+    // const data = await getAppointment(Number(company_id));
+    // setAppointment(data);
   };
 
   const loadCompany = async () => {
-    const company = await getCompany(Number(company_id));
-    console.log(company);
+    const company = await get_company(Number(company_id));
     setCompany(company);
 
-    if (company.location) {
-      const coords = await getCoordinatesFromAddress(company.location);
+    if (company.address) {
+      const coords = await getCoordinatesFromAddress(company.address);
       setCompanyCoords(coords);
     }
   };
@@ -138,11 +187,11 @@ export default function HomeScreen() {
               <ThemedText type="hugeBold">{company.name}</ThemedText>
               <ThemedView style={styles.view_top}>
                 <ThemedView
-                  colorName={company.is_open ? "online" : "offline"}
+                  colorName={company.active ? "online" : "offline"}
                   style={styles.openClose}
                 >
                   <ThemedText colorName={"white"} type="largeBold">
-                    {company.is_open ? "ABERTO" : "FECHADO"}
+                    {company.active ? "ABERTO" : "FECHADO"}
                   </ThemedText>
                 </ThemedView>
                 <ThemedView style={styles.like_container}>
@@ -156,60 +205,93 @@ export default function HomeScreen() {
                 </ThemedView>
               </ThemedView>
               <ThemedView style={styles.view_top}>
-                <IconText
-                  text={company.phone_number}
-                  textSize="largeBold"
-                  icon={"Foundation"}
-                  iconName={"telephone"}
-                  iconSize={18}
-                />
-                <IconText
-                  text={company.email}
-                  textSize="largeBold"
-                  icon={"Foundation"}
-                  iconName={"mail"}
-                  iconSize={18}
-                />
+                <TouchableOpacity onPress={() => copy_button(company.phone)}>
+                  <IconText
+                    text={company.phone}
+                    textSize="largeBold"
+                    icon={"Foundation"}
+                    iconName={"telephone"}
+                    iconSize={18}
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => copy_button(company.email)}>
+                  <IconText
+                    text={company.email}
+                    textSize="largeBold"
+                    icon={"Foundation"}
+                    iconName={"mail"}
+                    iconSize={18}
+                  />
+                </TouchableOpacity>
               </ThemedView>
-              <ThemedText>{company.observation}</ThemedText>
-              <ThemedText>{company.location}</ThemedText>
+              <TouchableOpacity
+                onPress={() => copy_button(company.description)}
+              >
+                <IconText
+                  text={company.description}
+                  textSize="large"
+                  icon={"Entypo"}
+                  iconName={"text"}
+                  iconSize={18}
+                  styleView={{ alignItems: "flex-start" }}
+                />
+              </TouchableOpacity>
+              <ThemedView colorName="background_primary" style={{padding: 10, borderRadius: 10, gap: 10}}>
+                <TouchableOpacity
+                  onPress={() =>
+                    openMapsOptions(company.address + " - " + company.zip_code)
+                  }
+                >
+                  <IconText
+                    text={company.address + " - " + company.zip_code}
+                    textSize="large"
+                    icon={"Ionicons"}
+                    iconName={"location-sharp"}
+                    iconSize={18}
+                    colorView="background_primary"
+                  />
+                </TouchableOpacity>
 
-              {companyCoords && userLocation && (
-                <View style={styles.mapContainer}>
-                  <MapView
-                    style={styles.map}
-                    initialRegion={{
-                      latitude: companyCoords.latitude,
-                      longitude: companyCoords.longitude,
-                      latitudeDelta: 0.005,
-                      longitudeDelta: 0.005,
-                    }}
-                    showsUserLocation={!!userLocation}
-                    showsMyLocationButton={Platform.OS === "android"}
-                  >
-                    <Marker
-                      coordinate={companyCoords}
-                      title={company.name}
-                      description={company.location}
-                    />
-                  </MapView>
+                {companyCoords && userLocation && (
+                  <View style={styles.mapContainer}>
+                    <MapView
+                      style={styles.map}
+                      initialRegion={{
+                        latitude: companyCoords.latitude,
+                        longitude: companyCoords.longitude,
+                        latitudeDelta: 0.005,
+                        longitudeDelta: 0.005,
+                      }}
+                      showsUserLocation={!!userLocation}
+                      showsMyLocationButton={Platform.OS === "android"}
+                    >
+                      <Marker
+                        coordinate={companyCoords}
+                        title={company.name}
+                        description={company.address}
+                      />
+                    </MapView>
 
-                  <TouchableOpacity
-                    style={styles.expandButton}
-                    onPress={() =>
-                      router.push({
-                        pathname: "/Pages/mapScreen",
-                        params: {
-                          lat: companyCoords.latitude.toString(),
-                          lng: companyCoords.longitude.toString(),
-                        },
-                      })
-                    }
-                  >
-                    <Ionicons name="expand-outline" size={18} color="white" />
-                  </TouchableOpacity>
-                </View>
-              )}
+                    <TouchableOpacity
+                      style={styles.expandButton}
+                      onPress={() =>
+                        router.push({
+                          pathname: "/Pages/mapScreen",
+                          params: {
+                            lat: companyCoords.latitude.toString(),
+                            lng: companyCoords.longitude.toString(),
+                          },
+                        })
+                      }
+                    >
+                      <Ionicons name="expand-outline" size={18} color="white" />
+                    </TouchableOpacity>
+                  </View>
+                )}
+              </ThemedView>
+            </ThemedView>
+            <ThemedView style={styles.cardTeam}>
+              <CardTeam company_id={company_id} />
             </ThemedView>
           </ScrollView>
         </ThemedView>
@@ -223,7 +305,8 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   main: {
     flex: 1,
-    marginHorizontal: 10,
+    marginHorizontal: 8,
+    paddingHorizontal: 2,
   },
   header: {
     flexDirection: "row",
@@ -273,5 +356,9 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
     padding: 6,
     borderRadius: 20,
+  },
+  cardTeam: {
+    marginVertical: 20,
+    flexDirection: "row",
   },
 });

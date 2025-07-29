@@ -1,6 +1,7 @@
 import { StyleProp, StyleSheet, ViewStyle } from "react-native";
 import { ThemedView } from "@/components/ThemedView";
 import {
+  Entypo,
   Feather,
   Foundation,
   Ionicons,
@@ -15,6 +16,7 @@ const IconMap = {
   Foundation: Foundation,
   Feather: Feather,
   MaterialCommunityIcons: MaterialCommunityIcons,
+  Entypo: Entypo,
 };
 
 export function IconText({

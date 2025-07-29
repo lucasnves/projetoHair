@@ -1,18 +1,20 @@
-import { Hairdresser } from "@/app/interfaces";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { ScrollView, StyleSheet } from "react-native";
 import { ThemedView } from "./ThemedView";
 import { ThemedText } from "./ThemedText";
-import { getCompanyHairdressers } from "@/services/store";
+import { CompanyTeam } from "@/app/interfaces";
+import { get_company_team } from "@/services/store";
 
-export function CardHairdresser({ company_id }: any) {
-  const [hairdressers, setHairdressers] = useState<Hairdresser[]>([]);
+export function CardTeam({ company_id }: any) {
+  const [team, setTeam] = useState<CompanyTeam[]>([]);
 
   const loadCompanyHairdressers = async () => {
-    const hairdressers = await getCompanyHairdressers(Number(company_id));
-    setHairdressers(hairdressers);
+    const team = await get_company_team(Number(company_id));
+    if (!team.error) {
+      setTeam(team.data);
+    }
   };
 
   useEffect(() => {
@@ -20,17 +22,17 @@ export function CardHairdresser({ company_id }: any) {
   }, []);
 
   return (
-    <ThemedView>
+    <ThemedView style={{ flex: 1 }}>
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        {hairdressers.length > 0 ? (
-          hairdressers.map((hairdresser, key) => (
+        {team.length > 0 ? (
+          team.map((team, key) => (
             <ThemedView
               key={key}
               style={{
+                flex: 1,
                 gap: 5,
-                marginRight: 8,
                 alignItems: "center",
-                width: 90,
+                width: 80,
               }}
             >
               <ThemedView
@@ -45,13 +47,17 @@ export function CardHairdresser({ company_id }: any) {
               >
                 <Ionicons size={25} name="image-outline" />
               </ThemedView>
-              <ThemedText type="small" style={{ width: '80%', textAlign: "center" }}>
-                {hairdresser.name}
+              <ThemedText
+                type="small"
+                style={{ width: "80%", textAlign: "center" }}
+                numberOfLines={2}
+              >
+                {team.name}
               </ThemedText>
             </ThemedView>
           ))
         ) : (
-          <ThemedText>Nenhum cabeleireiro registrado.</ThemedText>
+          <ThemedText>Nenhum funcionário registrado.</ThemedText>
         )}
       </ScrollView>
     </ThemedView>

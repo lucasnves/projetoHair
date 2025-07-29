@@ -49,16 +49,16 @@ export function CardCompanie() {
           renderItem={({ item: company, index }) => (
             <TouchableOpacity
               key={index}
-              disabled={company.is_open ? false : true}
+              disabled={company.active ? false : true}
               onPress={() => handleClick(company.id)}
               activeOpacity={0.6}
             >
               <ThemedView
-                style={[styles.cardMain, {opacity: company.is_open ? 1 : 0.5 }]}
-                colorName="background_secondary"
+                style={[styles.cardMain, {opacity: company.active ? 1 : 0.5 }]}
+                colorName="background_primary"
               >
                 <ThemedView
-                  colorName="background_secondary"
+                  colorName="background_primary"
                   style={styles.cardCompanie}
                 >
                   <ThemedView colorName="tintSecondary" style={styles.image}>
@@ -66,14 +66,14 @@ export function CardCompanie() {
                   </ThemedView>
                   <ThemedView
                     style={styles.cardInfos}
-                    colorName="background_secondary"
+                    colorName="background_primary"
                   >
                     <ThemedText type="extraLargeBold" numberOfLines={1}>
                       {company.name}
                     </ThemedText>
                     <ThemedView
                       style={styles.cardInfosLadoALado}
-                      colorName="background_secondary"
+                      colorName="background_primary"
                     >
                       <IconText
                         text={"2.5"}
@@ -82,20 +82,22 @@ export function CardCompanie() {
                         iconName={"star"}
                         iconSize={13}
                         colorName="pending"
+                        colorView="background_primary"
                       />
                       <IconText
-                        text={company.phone_number}
+                        text={company.phone}
                         textSize="medium"
                         icon={"Foundation"}
                         iconName={"telephone"}
                         iconSize={14}
+                        colorView="background_primary"
                       />
                     </ThemedView>
-                    <ThemedText type="medium">{company.location}</ThemedText>
+                    <ThemedText type="medium" numberOfLines={2}>{company.address} - {company.zip_code}</ThemedText>
                   </ThemedView>
                 </ThemedView>
                 <ThemedView
-                  colorName="background_secondary"
+                  colorName="background_primary"
                   style={styles.cardLike}
                 >
                   <TouchableOpacity
@@ -114,7 +116,7 @@ export function CardCompanie() {
           )}
         />
       ) : (
-        <ThemedText>Sem nenhuma empresa.</ThemedText>
+        <ThemedText>Não encontrado.</ThemedText>
       )}
     </ThemedView>
   );

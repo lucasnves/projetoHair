@@ -15,7 +15,7 @@ export const getCompanys = async () => {
   return response;
 };
 
-export const getCompany = async (id: number) => {
+export const get_company = async (id: number) => {
   const response = await api
     .post("company", {
       company_id: id,
@@ -31,16 +31,16 @@ export const getCompany = async (id: number) => {
   return response;
 };
 
-export const getCompanyHairdressers = async (id: number) => {
+export const get_company_team = async (id: number) => {
   const response = await api
-    .post("company-hairdressers", {
+    .post("company-team", {
       company_id: id,
     })
     .then((response) => {
       return response.data;
     })
     .catch((error) => {
-      console.error("[ERROR COMPANIES HAIRDRESSERS]", error);
+      console.error("[ERROR COMPANY TEAM]", error);
       return null;
     });
   return response;

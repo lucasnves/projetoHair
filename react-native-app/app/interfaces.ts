@@ -1,24 +1,31 @@
 export interface Company {
   id: number;
+  owner_id: string;
   name: string;
-  observation: string;
-  location: string;
+  cnpj: string;
+  phone: string;
   email: string;
-  is_open: boolean;
-  phone_number: string;
-  perfil_photo: string;
+  logo: string;
+  description: string;
+  address: string;
+  zip_code: string;
+  active: boolean;
   created_at: string;
   updated_at: string;
 }
 
-export interface Hairdresser {
+export interface CompanyUserPivot {
+  company_id: number;
+  user_id: number;
+}
+
+export interface CompanyTeam {
   id: number;
   name: string;
   email: string;
-  user_type: number;
   company_id: number;
-  specialty: string;
-  phone_number: string;
+  specialty?: string;
+  pivot: CompanyUserPivot;
   created_at: string;
   updated_at: string;
 }

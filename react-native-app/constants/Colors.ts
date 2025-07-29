@@ -33,7 +33,7 @@ export const Colors = {
     text: "#ECEDEE",
 
     background: "#010101",
-    background_primary: "#151718",
+    background_primary: "#1f2020ff",
     background_secondary: "#000000",
 
     tint: tintColorDark,
