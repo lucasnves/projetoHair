@@ -16,6 +16,7 @@ class AppointmentStatusSeeder extends Seeder
         DB::table('appointment_statuses')->insert([
             ['name' => 'pending', 'label' => 'Pendente', 'created_at' => now(), 'updated_at' => now()],
             ['name' => 'confirmed', 'label' => 'Confirmado', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'completed', 'label' => 'Concluído', 'created_at' => now(), 'updated_at' => now()],
             ['name' => 'canceled', 'label' => 'Cancelado', 'created_at' => now(), 'updated_at' => now()],
         ]);
     }

@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Appointments;
+use App\Models\Appointment;
 use App\Models\Company;
+use App\Models\Service;
 use App\Models\User;
 use App\Traits\MenuList;
 use Carbon\Carbon;
-use Exception;
 use Illuminate\Http\Request;
 
 class LoadController extends Controller
@@ -37,10 +37,11 @@ class LoadController extends Controller
         ], 200);
     }
 
-    public function get_hairdresser(Request $request)
+    public function get_company_services(Request $request)
     {
-        $hairdressers = User::find($request->id);
-        return $hairdressers;
+        $services = Service::where('company_id', $request->company_id)->get();
+        
+        return $services;
     }
 
     // public function get_appointment(Request $request)
@@ -76,16 +77,36 @@ class LoadController extends Controller
     //     }
     // }
 
-    // public function get_all_appointments_user(Request $request)
-    // {
-    //     $appointments = Appointments::where('user_id', $request->user_id)->orderBy('appointment_time', 'DESC')->get();
+    public function get_all_appointments_user(Request $request)
+    {
+        try {
+            $appointments = Appointment::where('user_id', $request->user_id)->orderBy('appointment_time', 'DESC')->get();
+            $data = [];
 
-    //     foreach ($appointments as $appointment) {
-    //         $appointment->appointment_label = strtoupper($this->appointments_status[$appointment->status]);
-    //         $appointment->hairdresser = User::find($appointment->hairdresser_id)->name;
-    //         $appointment->appointment_time = Carbon::parse($appointment->appointment_time)->format('H:i - d/m');
-    //     }
+            foreach ($appointments as $appointment) {
+                $data[] = [
+                    'id' => $appointment->id,
+                    'service' => $appointment->service->name,
+                    'price' => $appointment->service->price,
+                    'status' => $appointment->status->label,
+                    'user' => $appointment->user->name,
+                    'employee' => $appointment->employee->name,
+                    'company' => $appointment->company->name,
+                    'notes' => $appointment->notes,
+                    'appointment_time' => Carbon::parse($appointment->appointment_time)->format('H:i - d/m/Y'),
+                ];
+            }
 
-    //     return $appointments;
-    // }
+            return response()->json([
+                'error' => false,
+                'appointment' => $data
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => true,
+                'message' => 'Error',
+                'details' => $e->getMessage()
+            ], 200);
+        }
+    }
 }

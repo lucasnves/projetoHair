@@ -11,6 +11,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/make-appointment', [SyncController::class, 'make_appointment']);
     Route::post('/get-appointment', [LoadController::class, 'get_appointment']);
     Route::post('/get-all-appointments-user', [LoadController::class, 'get_all_appointments_user']);
+    Route::post('/get-company-services', [LoadController::class, 'get_company_services']);
 });
 Route::post('/login', [AuthController::class, 'loginUser']);
 
