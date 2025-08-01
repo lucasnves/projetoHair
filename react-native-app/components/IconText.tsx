@@ -55,6 +55,7 @@ export function IconText({
 
 const styles = StyleSheet.create({
   main: {
+    flex: 1,
     flexDirection: "row",
     gap: 5,
     alignItems: "center",

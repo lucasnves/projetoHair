@@ -76,14 +76,14 @@ export default function RootLayout() {
     return isSignedIn ? (
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(tabs)" />
-        <Stack.Screen
+        {/* <Stack.Screen
           name="Pages/company"
           options={{
             animation: "slide_from_bottom",
             animationTypeForReplace: "push",
             gestureDirection: "vertical",
           }}
-        />
+        /> */}
       </Stack>
     ) : (
       <LoginScreen />

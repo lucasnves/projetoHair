@@ -5,40 +5,34 @@ import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
-  View,
+  useColorScheme,
 } from "react-native";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { get_company } from "@/services/store";
 
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { Appointment, Company, CompanyTeam } from "../interfaces";
+import { Appointment, Company, CompanyTeam } from "@/app/interfaces";
 import { IconText } from "@/components/IconText";
 import { Colors } from "@/constants/Colors";
 import * as Clipboard from "expo-clipboard";
 import Toast from "react-native-toast-message";
 import { Linking } from "react-native";
-
-import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
 import { CardTeam } from "@/components/CardTeam";
+import { AuthContext } from "@/context/GlobalContext";
 
 export default function HomeScreen() {
+  const theme = useColorScheme() ?? "light";
   const router = useRouter();
+  const { user } = useContext(AuthContext);
   const { company_id } = useLocalSearchParams();
 
   const [company, setCompany] = useState<Company>();
-  const [appointment, setAppointment] = useState<Appointment>();
-  const [closeOpen, setCloseOpen] = useState<boolean>(false);
-  const [handleAppointment, setHandleAppointment] = useState<string>("pedding");
 
-  const [userLocation, setUserLocation] = useState<{
-    latitude: number;
-    longitude: number;
-  }>();
   const [companyCoords, setCompanyCoords] = useState<{
     latitude: number;
     longitude: number;
@@ -46,8 +40,7 @@ export default function HomeScreen() {
 
   useEffect(() => {
     loadCompany();
-    get_appointment();
-    getUserLocation();
+    // get_appointment();
   }, []);
 
   const copy_button = async (text: string) => {
@@ -68,6 +61,7 @@ export default function HomeScreen() {
   const openMapsOptions = (address: string) => {
     const lat = companyCoords?.latitude || 0;
     const lng = companyCoords?.longitude || 0;
+
     Alert.alert("Opções", "Escolha uma opção:", [
       {
         text: "Google Maps",
@@ -100,6 +94,10 @@ export default function HomeScreen() {
     ]);
   };
 
+  const schedule = () => {
+    router.push(`/Pages/schedule?company_id=${company_id}&user_id=${user?.id}`);
+  };
+
   const getCoordinatesFromAddress = async (address: string) => {
     try {
       const geocode = await Location.geocodeAsync(address);
@@ -113,34 +111,6 @@ export default function HomeScreen() {
       console.error("Erro ao geocodificar o endereço:", error);
     }
     return null;
-  };
-
-  const getUserLocation = async () => {
-    const { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== "granted") {
-      console.log("Permissão de localização negada");
-      return;
-    }
-
-    const location = await Location.getCurrentPositionAsync({});
-    const userLoc = {
-      latitude: location.coords.latitude,
-      longitude: location.coords.longitude,
-    };
-    setUserLocation(userLoc);
-  };
-
-  const handleCloseOpen = async () => {
-    setCloseOpen(!closeOpen);
-  };
-
-  const handleAppointments = async () => {
-    console.log("a");
-  };
-
-  const get_appointment = async () => {
-    // const data = await getAppointment(Number(company_id));
-    // setAppointment(data);
   };
 
   const loadCompany = async () => {
@@ -167,9 +137,11 @@ export default function HomeScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.main}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: Colors[theme].background }]}
+    >
       {company ? (
-        <ThemedView>
+        <ThemedView style={styles.main}>
           <ThemedView style={styles.header}>
             <TouchableOpacity onPress={router.back}>
               <ThemedView colorName="tintTertiary" style={styles.backButton}>
@@ -187,18 +159,16 @@ export default function HomeScreen() {
               <ThemedText type="hugeBold">{company.name}</ThemedText>
               <ThemedView style={styles.view_top}>
                 <ThemedView
-                  colorName={company.active ? "online" : "offline"}
+                  // colorName={company.active ? "online" : "offline"}
                   style={styles.openClose}
                 >
-                  <ThemedText colorName={"white"} type="largeBold">
+                  <ThemedText type="largeBold">
                     {company.active ? "ABERTO" : "FECHADO"}
                   </ThemedText>
                 </ThemedView>
                 <ThemedView style={styles.like_container}>
-                  <Ionicons name="star" size={18} color={Colors.dark.pending} />
-                  <ThemedText colorName="pending" type="largeBold">
-                    2.3
-                  </ThemedText>
+                  <Ionicons name="star" size={18} color={Colors.warning} />
+                  <ThemedText type="largeBold">2.3</ThemedText>
                   <ThemedText colorName="tintSecondary" type="mediumBold">
                     (23 avaliações)
                   </ThemedText>
@@ -236,63 +206,26 @@ export default function HomeScreen() {
                   styleView={{ alignItems: "flex-start" }}
                 />
               </TouchableOpacity>
-              <ThemedView colorName="background_primary" style={{padding: 10, borderRadius: 10, gap: 10}}>
-                <TouchableOpacity
-                  onPress={() =>
-                    openMapsOptions(company.address + " - " + company.zip_code)
-                  }
-                >
-                  <IconText
-                    text={company.address + " - " + company.zip_code}
-                    textSize="large"
-                    icon={"Ionicons"}
-                    iconName={"location-sharp"}
-                    iconSize={18}
-                    colorView="background_primary"
-                  />
-                </TouchableOpacity>
-
-                {companyCoords && userLocation && (
-                  <View style={styles.mapContainer}>
-                    <MapView
-                      style={styles.map}
-                      initialRegion={{
-                        latitude: companyCoords.latitude,
-                        longitude: companyCoords.longitude,
-                        latitudeDelta: 0.005,
-                        longitudeDelta: 0.005,
-                      }}
-                      showsUserLocation={!!userLocation}
-                      showsMyLocationButton={Platform.OS === "android"}
-                    >
-                      <Marker
-                        coordinate={companyCoords}
-                        title={company.name}
-                        description={company.address}
-                      />
-                    </MapView>
-
-                    <TouchableOpacity
-                      style={styles.expandButton}
-                      onPress={() =>
-                        router.push({
-                          pathname: "/Pages/mapScreen",
-                          params: {
-                            lat: companyCoords.latitude.toString(),
-                            lng: companyCoords.longitude.toString(),
-                          },
-                        })
-                      }
-                    >
-                      <Ionicons name="expand-outline" size={18} color="white" />
-                    </TouchableOpacity>
-                  </View>
-                )}
-              </ThemedView>
+              <TouchableOpacity
+                onPress={() =>
+                  openMapsOptions(company.address + " - " + company.zip_code)
+                }
+              >
+                <IconText
+                  text={company.address + " - " + company.zip_code}
+                  textSize="large"
+                  icon={"Ionicons"}
+                  iconName={"location-sharp"}
+                  iconSize={18}
+                />
+              </TouchableOpacity>
             </ThemedView>
             <ThemedView style={styles.cardTeam}>
-              <CardTeam company_id={company_id} />
+              <CardTeam company_id={Number(company_id)} />
             </ThemedView>
+            <TouchableOpacity onPress={() => schedule()}>
+              <ThemedText>Marcar Horário</ThemedText>
+            </TouchableOpacity>
           </ScrollView>
         </ThemedView>
       ) : (
@@ -303,10 +236,11 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  main: {
+  container: {
     flex: 1,
-    marginHorizontal: 8,
-    paddingHorizontal: 2,
+  },
+  main: {
+    marginHorizontal: 10,
   },
   header: {
     flexDirection: "row",

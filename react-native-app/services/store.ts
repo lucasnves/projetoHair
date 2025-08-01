@@ -1,14 +1,15 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
+// import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Appointment } from "@/app/interfaces";
 import api from "./api";
 
-export const getCompanys = async () => {
+export const get_companys = async () => {
   const response = await api
     .get("companies")
     .then((response) => {
       return response.data;
     })
     .catch((error) => {
-      console.error("[ERROR COMPANIES]", error);
+      console.error("[get_companys]", error);
       return null;
     });
 
@@ -24,7 +25,7 @@ export const get_company = async (id: number) => {
       return response.data;
     })
     .catch((error) => {
-      console.error("[ERROR COMPANY]", error);
+      console.error("[get_company]", error);
       return null;
     });
 
@@ -40,35 +41,42 @@ export const get_company_team = async (id: number) => {
       return response.data;
     })
     .catch((error) => {
-      console.error("[ERROR COMPANY TEAM]", error);
+      console.error("[get_company_team]", error);
       return null;
     });
   return response;
 };
 
-export const getAppointment = async (company_id: number) => {
-  let response = null;
-  const dataUser = await AsyncStorage.getItem("@user");
-  if (dataUser) {
-    const user = JSON.parse(dataUser);
-    if (user) {
-      response = await api
-        .post("get-appointment", {
-          user_id: user.id,
-          company_id: company_id,
-        })
-        .then((response) => {
-          if (!response.data.error) {
-            return response.data.appointment;
-          }
-          return null;
-        })
-        .catch((error) => {
-          console.log("a");
-          console.error("[ERROR APPOINTMENT]", error);
-          return null;
-        });
-    }
-  }
+export const get_company_services = async (id: number) => {
+  const response = await api
+    .post("get-company-services", {
+      company_id: id,
+    })
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("[get_company_services]", error);
+      return null;
+    });
+  return response;
+};
+
+export const create_appointment = async (data: Appointment) => {
+  const response = await api
+    .post("create-appointment", {
+      data,
+    })
+    .then((response) => {
+      console.log(response.data)
+      if(!response.data.error) {
+        return response.data;
+      }
+      console.log(response.data.details);
+    })
+    .catch((error) => {
+      console.error("[create_appointment]", error);
+      return null;
+    });
   return response;
 };

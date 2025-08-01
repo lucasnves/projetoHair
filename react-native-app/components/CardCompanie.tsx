@@ -1,5 +1,5 @@
 import { Company } from "@/app/interfaces";
-import { getCompanys } from "@/services/store";
+import { get_companys } from "@/services/store";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { FlatList, StyleSheet, TouchableOpacity } from "react-native";
@@ -12,7 +12,7 @@ import { IconText } from "./IconText";
 
 export function CardCompanie() {
   const [companies, setCompanies] = useState<Company[]>([]);
-  const [likeCompany, setLikeCompany] = useState("heart-o");
+  const [likeCompany, setLikeCompany] = useState<"heart-o" | "heart">("heart-o");
   const colorIcon = useThemeColorByName("text");
   const router = useRouter();
 
@@ -25,16 +25,16 @@ export function CardCompanie() {
   };
 
   useEffect(() => {
-    getCompanies();
+    load_companys();
     const interval = setInterval(() => {
-      getCompanies();
+      load_companys();
     }, 20000);
 
     return () => clearInterval(interval);
   }, []);
 
-  const getCompanies = async () => {
-    const data = await getCompanys();
+  const load_companys = async () => {
+    const data = await get_companys();
     setCompanies(data);
   };
 

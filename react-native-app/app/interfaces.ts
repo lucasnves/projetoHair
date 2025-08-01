@@ -31,15 +31,20 @@ export interface CompanyTeam {
 }
 
 export interface Appointment {
-  id: number;
-  user_id: number;
   company_id: number;
-  hairdresser_id: number;
-  hairdresser: string;
+  user_id: number;
+  employee_id: number | undefined;
+  service_id: number | undefined;
+  status_id: number;
   appointment_time: string;
+  notes: string | undefined;
+}
+
+export interface Service {
+  id: number;
+  company_id: number;
+  name: string;
   price: string;
-  status: number;
-  appointment_label: string;
-  created_at: string;
-  updated_at: string;
+  duration: number;
+  description: string;
 }
