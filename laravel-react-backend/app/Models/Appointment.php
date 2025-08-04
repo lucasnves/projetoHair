@@ -9,23 +9,30 @@ class Appointment extends Model
 {
     use HasFactory;
 
-    public function service() {
+    protected $guarded = [];
+
+    public function service()
+    {
         return $this->belongsTo(Service::class);
     }
 
-    public function status() {
+    public function status()
+    {
         return $this->belongsTo(AppointmentStatus::class, 'status_id');
     }
 
-    public function user() {
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function employee() {
+    public function employee()
+    {
         return $this->belongsTo(User::class, 'employee_id');
     }
 
-    public function company() {
+    public function company()
+    {
         return $this->belongsTo(Company::class);
     }
 }
