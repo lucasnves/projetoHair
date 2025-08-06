@@ -1,10 +1,5 @@
 import type { PropsWithChildren, ReactElement } from "react";
-import {
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  useColorScheme,
-} from "react-native";
+import { StyleSheet, useColorScheme } from "react-native";
 import Animated, {
   interpolate,
   useAnimatedRef,
@@ -13,10 +8,8 @@ import Animated, {
 } from "react-native-reanimated";
 
 import { ThemedView } from "@/components/ThemedView";
-import { Ionicons } from "@expo/vector-icons";
-import { Colors } from "@/constants/Colors";
 
-const HEADER_HEIGHT = 110;
+const HEADER_HEIGHT = 130;
 
 type Props = PropsWithChildren<{
   headerImage: ReactElement;
@@ -28,7 +21,6 @@ export default function ParallaxScrollView({
   children,
   headerImage,
   headerBackgroundColor,
-  handleBack,
 }: Props) {
   const colorScheme = useColorScheme() ?? "light";
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
@@ -57,7 +49,11 @@ export default function ParallaxScrollView({
 
   return (
     <ThemedView style={styles.container}>
-      <Animated.ScrollView ref={scrollRef} scrollEventThrottle={16} showsVerticalScrollIndicator={false}>
+      <Animated.ScrollView
+        ref={scrollRef}
+        scrollEventThrottle={16}
+        showsVerticalScrollIndicator={false}
+      >
         <Animated.View
           style={[
             styles.header,
@@ -67,14 +63,6 @@ export default function ParallaxScrollView({
         >
           {headerImage}
         </Animated.View>
-        {handleBack && (
-          <TouchableOpacity
-            onPress={() => handleBack()}
-            style={[styles.routerBack, { backgroundColor: colorScheme === 'light' ? Colors.light.background_secondary : Colors.dark.background_secondary }]}
-          >
-            <Ionicons size={26} name={"chevron-down-outline"} color={colorScheme === 'light' ? Colors.light.tabIconDefault : Colors.dark.tabIconDefault} />
-          </TouchableOpacity>
-        )}
         <ThemedView style={styles.content}>{children}</ThemedView>
       </Animated.ScrollView>
     </ThemedView>
@@ -92,16 +80,8 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingVertical: 16,
-    paddingHorizontal: 10,
-    gap: 12,
+    paddingHorizontal: 8,
+    gap: 16,
     overflow: "hidden",
-  },
-  routerBack: {
-    position: "absolute",
-    marginTop: 70,
-    marginLeft: 8,
-    backgroundColor: "black",
-    padding: 1.5,
-    borderRadius: 5,
   },
 });

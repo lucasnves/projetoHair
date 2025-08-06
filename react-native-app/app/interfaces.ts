@@ -40,6 +40,19 @@ export interface Appointment {
   notes: string | undefined;
 }
 
+export interface LoadAppointment {
+  id: number;
+  company: string;
+  user: string;
+  employee: string;
+  service: string;
+  status: string;
+  status_id: number;
+  appointment_time: string;
+  price: string;
+  notes: string;
+}
+
 export interface Service {
   id: number;
   company_id: number;

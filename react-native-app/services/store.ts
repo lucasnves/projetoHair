@@ -1,5 +1,5 @@
 // import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Appointment } from "@/app/interfaces";
+import { Appointment } from "../app/interfaces";
 import api from "./api";
 
 export const get_companys = async () => {
@@ -68,14 +68,29 @@ export const create_appointment = async (data: Appointment) => {
       data,
     })
     .then((response) => {
-      console.log(response.data)
-      if(!response.data.error) {
+      if (!response.data.error) {
         return response.data;
       }
-      console.log(response.data.details);
     })
     .catch((error) => {
       console.error("[create_appointment]", error);
+      return null;
+    });
+  return response;
+};
+
+export const get_all_appointments_user = async (id: number) => {
+  const response = await api
+    .post("get-all-appointments-user", {
+      user_id: id,
+    })
+    .then((response) => {
+      if (!response.data.error) {
+        return response.data;
+      }
+    })
+    .catch((error) => {
+      console.log("[get_all_appointments_user]", error);
       return null;
     });
   return response;

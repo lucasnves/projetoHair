@@ -3,19 +3,19 @@ import { useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
 import { ThemedView } from "./ThemedView";
 import { ThemedText } from "./ThemedText";
-import { Appointment } from "@/app/interfaces";
-import { get_all_appointments_user } from "@/services/store";
+import { Appointment } from "../app/interfaces";
+// import { get_all_appointments_user } from "@/services/store";
 
 export function AppointmentHistory() {
   const [data, setData] = useState<Appointment[]>([]);
 
   const load = async () => {
-    const data = await get_all_appointments_user();
-    setData(data);
+    // const data = await get_all_appointments_user();
+    // setData(data);
   };
 
   useEffect(() => {
-    load();
+    // load();
   }, []);
 
   return (

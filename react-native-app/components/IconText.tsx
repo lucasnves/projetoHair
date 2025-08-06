@@ -6,6 +6,7 @@ import {
   Foundation,
   Ionicons,
   MaterialCommunityIcons,
+  MaterialIcons,
 } from "@expo/vector-icons";
 import { ThemedText, ThemedTextProps } from "./ThemedText";
 import { useThemeColorByName } from "@/hooks/useThemeColorByName";
@@ -17,6 +18,7 @@ const IconMap = {
   Feather: Feather,
   MaterialCommunityIcons: MaterialCommunityIcons,
   Entypo: Entypo,
+  MaterialIcons: MaterialIcons
 };
 
 export function IconText({
@@ -26,7 +28,7 @@ export function IconText({
   textSize = "large",
   icon,
   iconName,
-  iconSize = 15,
+  iconSize = 18,
   colorName = "text",
 }: {
   colorView?: keyof typeof Colors.light & keyof typeof Colors.dark;
@@ -57,7 +59,7 @@ const styles = StyleSheet.create({
   main: {
     flex: 1,
     flexDirection: "row",
-    gap: 5,
+    gap: 4,
     alignItems: "center",
   },
 });

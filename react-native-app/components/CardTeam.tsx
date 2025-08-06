@@ -3,15 +3,17 @@ import { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, TouchableOpacity } from "react-native";
 import { ThemedView } from "./ThemedView";
 import { ThemedText } from "./ThemedText";
-import { CompanyTeam } from "@/app/interfaces";
+import { CompanyTeam } from "../app/interfaces";
 import { get_company_team } from "@/services/store";
+import { Colors } from "@/constants/Colors";
 
 type props = {
   company_id: number;
   choose?: (team: CompanyTeam) => void;
+  selectedEmployee?: CompanyTeam;
 };
 
-export function CardTeam({ company_id, choose }: props) {
+export function CardTeam({ company_id, choose, selectedEmployee }: props) {
   const [team, setTeam] = useState<CompanyTeam[]>([]);
 
   const loadCompanyHairdressers = async () => {
@@ -54,10 +56,15 @@ export function CardTeam({ company_id, choose }: props) {
                 </ThemedView>
                 <ThemedText
                   type="small"
-                  style={{ width: "80%", textAlign: "center" }}
+                  style={{
+                    maxWidth: 65,
+                    textAlign: "center",
+                    color: selectedEmployee?.id == team.id && Colors.primary,
+                    fontWeight: selectedEmployee?.id == team.id && "700",
+                  }}
                   numberOfLines={2}
                 >
-                  {team.name}
+                  {team.name.trim().split(/\s+/).slice(0, 2).join(" ")}
                 </ThemedText>
               </TouchableOpacity>
             </ThemedView>

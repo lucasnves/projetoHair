@@ -65,13 +65,16 @@ export const Colors = {
   warning: "#FFC107",
   danger: "#E53935",
   info: "#1E90FF",
-  rescheduled: "#1A548E",
-  canceled: "#9E9E9E",
   disabled: "#BDBDBD",
   online: "#66BB6A",
   offline: "#EF5350",
   white: "#FFFFFF",
   black: "#000000",
+
+  pending: "#d8a200ff",
+  confirmed: "#1A548E",
+  completed: "#318235ff",
+  canceled: "#797979ff",
 
   light: {
     // TEXTOS
@@ -94,6 +97,9 @@ export const Colors = {
     // ÍCONES / TABS
     icon: "#4F4F4F",
     tabIconDefault: "#9E9E9E",
+
+    white: "#FFFFFF",
+    black: "#000000",
   },
 
   dark: {
@@ -118,5 +124,8 @@ export const Colors = {
     // ÍCONES / TABS
     icon: "#B0B0B0",
     tabIconDefault: "#808080",
+
+    white: "#FFFFFF",
+    black: "#000000",
   },
 };

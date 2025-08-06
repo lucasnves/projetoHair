@@ -1,4 +1,4 @@
-import { Company } from "@/app/interfaces";
+import { Company } from "../app/interfaces";
 import { get_companys } from "@/services/store";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";

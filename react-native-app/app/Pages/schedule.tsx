@@ -1,7 +1,6 @@
 import {
   SafeAreaView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   useColorScheme,
   ScrollView,
@@ -17,8 +16,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { CardTeam } from "@/components/CardTeam";
 import { create_appointment, get_company_services } from "@/services/store";
 import { CompanyTeam, Service } from "../interfaces";
-import { IconText } from "@/components/IconText";
-import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
 
 const mockHours = [
   "08:00",
@@ -57,11 +55,11 @@ export default function Schedule() {
   const [selectedEmployee, setSelectedEmployee] = useState<CompanyTeam>();
   const [selectedService, setSelectedService] = useState<Service>();
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [selectedHour, setSelectedHour] = useState<string | null>(null);
+  const [textNotes, setTextNotes] = useState<string>();
   const [selectedDateResume, setSelectedDateResume] = useState<string | null>(
     null
   );
-  const [selectedHour, setSelectedHour] = useState<string | null>(null);
-  const [textNotes, setTextNotes] = useState<string>();
 
   const handleDateSelect = (day: { dateString: string }) => {
     setSelectedDate(day.dateString);
@@ -163,6 +161,7 @@ export default function Schedule() {
               choose={(data) => {
                 check_employee(data);
               }}
+              selectedEmployee={selectedEmployee}
             />
           </ThemedView>
 
@@ -341,8 +340,11 @@ export default function Schedule() {
                         alignItems: "center",
                       }}
                     >
-                      <ThemedText numberOfLines={1}>
-                        {selectedEmployee?.name} • {selectedService?.name}
+                      <ThemedText numberOfLines={1} style={{ flex: 1 }}>
+                        {selectedEmployee?.name}
+                      </ThemedText>
+                      <ThemedText numberOfLines={1} style={{ flex: 1 }}>
+                        • {selectedService?.name}
                       </ThemedText>
                       <ThemedView
                         style={{
